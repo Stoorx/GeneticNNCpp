@@ -29,7 +29,10 @@ class Random {
     double NextDouble() {
         return (double)NextLong() / UINT64_MAX;
     }
-  
+    
+    static Random& GetGlobalInstance() {
+        return mGlobalRandom;
+    }
   protected:
     bool LFSR_Galois() {
         if(S & 0x0000'0000'0000'0001U) {
@@ -43,4 +46,6 @@ class Random {
     }
     
     uint64_t S = 0x0000'0000'0000'0001;
+    
+    static Random mGlobalRandom;
 };

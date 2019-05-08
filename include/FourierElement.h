@@ -13,7 +13,6 @@ class FourierElement {
             Phase(phase) {
     }
     
-    
     double Amplitude = 0.0;
     double Phase     = 0.0;
 };

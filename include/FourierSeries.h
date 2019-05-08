@@ -7,20 +7,27 @@
 #include <cstdint>
 #include <vector>
 #include <FourierElement.h>
+#include <Random.h>
 #include <cmath>
 
 class FourierSeries {
   public:
-    explicit FourierSeries(uint32_t length) :
+    explicit FourierSeries(uint64_t length) :
             mElements(length, FourierElement()) {
     }
     
-    static FourierSeries CreateFromRandom(uint32_t length) {
-        auto fs = FourierSeries(length);
+    static FourierSeries CreateFromRandom(uint64_t length) {
+        auto fs     = FourierSeries(length);
+        auto random = Random::GetGlobalInstance();
         
+        for(int i = 0; i < fs.getLength(); ++i) {
+            fs[i] = FourierElement(random.NextDouble(), random.NextDouble());
+        }
+        
+        return fs;
     }
     
-    double Calculate(double x) {
+    virtual double Calculate(double x) {
         double result = 0;
         
         int k = 0;
@@ -38,11 +45,35 @@ class FourierSeries {
     FourierElement& operator[](size_t idx) {
         return mElements[idx];
     }
+    
     size_t getLength() const {
-        return  mElements.size();
+        return mElements.size();
     }
-    
-    
+  
+  
   protected:
     std::vector<FourierElement> mElements;
+};
+
+class PitchedFourierSeries : FourierSeries {
+  public:
+    explicit PitchedFourierSeries(uint64_t length) :
+            FourierSeries(length), Pitch(0) {
+    }
+    
+    static PitchedFourierSeries CreateFromRandom(uint64_t length) {
+        auto pfs    = PitchedFourierSeries(length);
+        auto random = Random::GetGlobalInstance();
+        
+        for(int i = 0; i < pfs.getLength(); ++i) {
+            pfs[i] = FourierElement(random.NextDouble(), random.NextDouble());
+        }
+        
+        pfs.Pitch = random.NextDouble();
+        
+        return pfs;
+    }
+    
+    double Pitch = 0;
+    
 };
