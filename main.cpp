@@ -1,6 +1,10 @@
 #include <iostream>
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    auto    r = Random();
+    for(int i = 0; i < 10; ++i) {
+        auto d = r.NextDouble();
+        std::cout << d << std::endl;
+    }
     return 0;
 }

@@ -4,18 +4,21 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <FourierElement.h>
-#include <math.h>
+#include <cmath>
 
 class FourierSeries {
   public:
-    FourierSeries(uint32_t length) :
+    explicit FourierSeries(uint32_t length) :
             mElements(length, FourierElement()) {
     }
     
-    
+    static FourierSeries CreateFromRandom(uint32_t length) {
+        auto fs = FourierSeries(length);
+        
+    }
     
     double Calculate(double x) {
         double result = 0;
