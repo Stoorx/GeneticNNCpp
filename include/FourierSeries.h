@@ -51,17 +51,23 @@ class FourierSeries {
         return mElements.size();
     }
 
-//    class FourierSeriesIterator : public std::vector<FourierElement>::iterator {
-//      public:
-//        explicit FourierSeriesIterator(std::vector<FourierElement>::iterator& it):
-//                std::vector<FourierElement>::iterator(it){
-//        }
-//
-//    };
+    class FourierSeriesIterator : public std::vector<FourierElement>::iterator {
+    public:
+        explicit FourierSeriesIterator(std::vector<FourierElement>::iterator &it) :
+                std::vector<FourierElement>::iterator(it) {
+        }
 
-//    FourierSeriesIterator begin(){
-//        return FourierSeriesIterator(mElements.begin());
-//    }
+    };
+
+    FourierSeriesIterator begin() {
+        auto it = mElements.begin();
+        return FourierSeriesIterator(it);
+    }
+
+    FourierSeriesIterator end() {
+        auto it = mElements.end();
+        return FourierSeriesIterator(it);
+    }
   protected:
     std::vector<FourierElement> mElements;
 };
@@ -84,8 +90,8 @@ class PitchedFourierSeries : public FourierSeries {
         
         return pfs;
     }
-    
-    virtual double Calculate(double x) const override {
+
+    double Calculate(double x) const override {
         return FourierSeries::Calculate(x) + Pitch * x;
     }
     

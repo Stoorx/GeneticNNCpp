@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <ctime>
 
+class Random;
+
 class Random {
   public:
     explicit Random(uint64_t seed = (uint64_t)time(nullptr)) :
@@ -30,9 +32,7 @@ class Random {
         return (double)NextLong() / UINT64_MAX;
     }
     
-    static Random& GetGlobalInstance() {
-        return mGlobalRandom;
-    }
+
   protected:
     bool LFSR_Galois() {
         if(S & 0x0000'0000'0000'0001U) {
@@ -40,7 +40,7 @@ class Random {
             return true;
         }
         else {
-            S >>= 1;
+            S >>= 1U;
             return false;
         }
     }
@@ -48,4 +48,8 @@ class Random {
     uint64_t S = 0x0000'0000'0000'0001;
     
     static Random mGlobalRandom;
+public:
+    static Random &GetGlobalInstance() {
+        return mGlobalRandom;
+    }
 };

@@ -1,11 +1,16 @@
 #include <Random.h>
 #include <iostream>
+#include <FourierHypersurface.h>
 
 int main() {
-    auto    r = Random();
-    for(int i = 0; i < 10; ++i) {
-        auto d = r.NextDouble();
-        std::cout << d << std::endl;
+    FourierHypersurface fs = FourierHypersurface::CreateFromRandom(15, 5);
+    for (auto &pfs : fs) {
+        for (auto &fe :pfs) {
+            std::cout << "(" << fe.Amplitude << ", " << fe.Phase << "); ";
+        }
+        std::cout << std::endl;
     }
+
+
     return 0;
 }

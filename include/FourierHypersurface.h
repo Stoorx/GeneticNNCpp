@@ -21,10 +21,9 @@ class FourierHypersurface {
             uint64_t seriesLength,
             Random& random = Random::GetGlobalInstance()) {
         FourierHypersurface fhs = FourierHypersurface(arity, seriesLength);
-        
-        // TODO: Rewrite to foreach
-        for(int i = 0; i < arity; ++i) {
-            fhs.mSeries[i] = PitchedFourierSeries::CreateFromRandom(seriesLength);
+
+        for (PitchedFourierSeries &pfs : fhs.mSeries) {
+            pfs = PitchedFourierSeries::CreateFromRandom(seriesLength);
         }
         return fhs;
     }
@@ -51,7 +50,24 @@ class FourierHypersurface {
         
         return result;
     }
-  
+
+    class FourierHypersurfaceIterator : public std::vector<PitchedFourierSeries>::iterator {
+    public:
+        explicit FourierHypersurfaceIterator(std::vector<PitchedFourierSeries>::iterator &it) :
+                std::vector<PitchedFourierSeries>::iterator(it) {
+        }
+
+    };
+
+    FourierHypersurfaceIterator begin() {
+        auto it = mSeries.begin();
+        return FourierHypersurfaceIterator(it);
+    }
+
+    FourierHypersurfaceIterator end() {
+        auto it = mSeries.end();
+        return FourierHypersurfaceIterator(it);
+    }
   protected:
     std::vector<PitchedFourierSeries> mSeries;
 };
