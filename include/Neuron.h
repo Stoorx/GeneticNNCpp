@@ -17,6 +17,8 @@ class Neuron {
 
 class ChainableNeuron : public Neuron {
   public:
+    ChainableNeuron() : mInputCache(), mPrevNeurons() {}
+    
     explicit ChainableNeuron(std::vector<std::shared_ptr<Neuron>>& prevNeurons) :
             mInputCache(prevNeurons.size(), 0),
             mPrevNeurons(prevNeurons) {
@@ -26,9 +28,20 @@ class ChainableNeuron : public Neuron {
         return mPrevNeurons.size();
     }
     
-    virtual void AddPrevNeuron(Neuron& prevNeuron) {
-        mPrevNeurons.push_back(std::shared_ptr<Neuron>(&prevNeuron));
+    virtual void AddPrevNeuron(std::shared_ptr<Neuron>& prevNeuron) {
+        mPrevNeurons.push_back(prevNeuron);
         mInputCache.push_back(0.0);
+    }
+    
+    virtual void AddPrevNeuron(std::shared_ptr<Neuron>&& prevNeuron) {
+        mPrevNeurons.emplace_back(prevNeuron);
+        mInputCache.emplace_back(0.0);
+    }
+    
+    virtual void AddPrevNeurons(std::vector<std::shared_ptr<Neuron>>& neurons) {
+        for(auto& neuronPtr: neurons) {
+            AddPrevNeuron(neuronPtr);
+        }
     }
     
     void InvalidateCache() {
@@ -44,20 +57,39 @@ class ChainableNeuron : public Neuron {
 
 class InnerNeuron : public ChainableNeuron {
   public:
-    InnerNeuron(std::vector<std::shared_ptr<Neuron>>& prevNeurons, uint64_t activationFunctionLength) :
-            ChainableNeuron(prevNeurons),
-            mActivationFunction(prevNeurons.size(), activationFunctionLength),
+    InnerNeuron(uint64_t activationFunctionLength = 10) :
+            ChainableNeuron(),
+            mActivationFunction(0, activationFunctionLength),
             mDefaultActivationFunctionLength(activationFunctionLength) {
     }
     
-    void AddPrevNeuron(Neuron& prevNeuron, uint64_t dimensionActivationLength, bool randomizeWeights = false) {
+    void AddPrevNeuron(std::shared_ptr<
+            Neuron>& prevNeuron, uint64_t dimensionActivationLength, bool randomizeWeights = false) {
         ChainableNeuron::AddPrevNeuron(prevNeuron);
         mActivationFunction.AddDimension(dimensionActivationLength, randomizeWeights);
     }
     
-    void AddPrevNeuron(Neuron& prevNeuron, bool randomizeWeights = false) {
+    void AddPrevNeuron(std::shared_ptr<
+            Neuron>&& prevNeuron, uint64_t dimensionActivationLength, bool randomizeWeights = false) {
+        ChainableNeuron::AddPrevNeuron(prevNeuron);
+        mActivationFunction.AddDimension(dimensionActivationLength, randomizeWeights);
+    }
+    
+    void AddPrevNeuron(std::shared_ptr<Neuron>& prevNeuron, bool randomizeWeights = false) {
         ChainableNeuron::AddPrevNeuron(prevNeuron);
         mActivationFunction.AddDimension(randomizeWeights);
+    }
+    
+    void AddPrevNeuron(std::shared_ptr<Neuron>&& prevNeuron, bool randomizeWeights = false) {
+        ChainableNeuron::AddPrevNeuron(prevNeuron);
+        mActivationFunction.AddDimension(randomizeWeights);
+    }
+    
+    void AddPrevNeurons(std::vector<std::shared_ptr<Neuron>>& neurons, bool randomizeWeights = false) {
+        for(auto& neuronPtr: neurons) {
+            AddPrevNeuron(neuronPtr);
+            mActivationFunction.AddDimension(randomizeWeights);
+        }
     }
     
     double Calculate() override {
@@ -81,6 +113,10 @@ class InnerNeuron : public ChainableNeuron {
 
 class OutputNeuron : public ChainableNeuron {
   public:
+    OutputNeuron() : ChainableNeuron() {
+    
+    }
+    
     double Calculate() override {
         std::vector<double> inputValues(GetInputsCount(), 0.0);
         
@@ -102,6 +138,8 @@ class OutputNeuron : public ChainableNeuron {
 
 class InputNeuron : public Neuron {
   public:
+    InputNeuron(double value) : mValue(value) {}
+    
     void setValue(double value) {
         mValue = value;
     }
