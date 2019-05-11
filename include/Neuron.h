@@ -87,8 +87,7 @@ class InnerNeuron : public ChainableNeuron {
     
     void AddPrevNeurons(std::vector<std::shared_ptr<Neuron>>& neurons, bool randomizeWeights = false) {
         for(auto& neuronPtr: neurons) {
-            AddPrevNeuron(neuronPtr);
-            mActivationFunction.AddDimension(randomizeWeights);
+            AddPrevNeuron(neuronPtr, randomizeWeights);
         }
     }
     

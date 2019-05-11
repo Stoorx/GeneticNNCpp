@@ -58,10 +58,10 @@ class FourierHypersurface {
     
     void AddDimension(uint64_t seriesLength, bool randomized = false) {
         if(randomized) {
-            mSeries.emplace_back(PitchedFourierSeries::CreateFromRandom(seriesLength));
+            mSeries.push_back(std::move(PitchedFourierSeries::CreateFromRandom(seriesLength)));
         }
         else {
-            mSeries.emplace_back(PitchedFourierSeries(seriesLength));
+            mSeries.emplace_back(seriesLength);
         }
     }
     

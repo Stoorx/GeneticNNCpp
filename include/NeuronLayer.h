@@ -9,7 +9,6 @@
 #include <memory>
 #include <Neuron.h>
 
-template<class T>
 class NeuronLayer {
   public:
     NeuronLayer() = default;
@@ -23,11 +22,11 @@ class NeuronLayer {
     }
     
     void AddNeurons(std::vector<std::shared_ptr<Neuron>>& neurons) {
-        mNeurons.push_back(neurons);
+        mNeurons.insert(mNeurons.end(), neurons.begin(), neurons.end());
     }
     
     void AddNeurons(std::vector<std::shared_ptr<Neuron>>&& neurons) {
-        mNeurons.emplace_back(neurons);
+        mNeurons.insert(mNeurons.end(), neurons.begin(), neurons.end());
     }
     
     std::vector<double> CalculateLayer() {
@@ -40,11 +39,20 @@ class NeuronLayer {
         return result;
     }
     
-    void AddPrevLayer(NeuronLayer<Neuron>& prevLayer) {
+    void AddPrevLayer(NeuronLayer& prevLayer, bool randomize = false) {
         mPrevLayer       = &prevLayer;
-        auto prevNeurons = mPrevLayer->GetNeurons();
+        auto prevNeurons = mPrevLayer->GetNeurons(); // Potential null-fail
         for(auto& neuronPtr : mNeurons) {
-            neuronPtr->AddPrevNeurons(prevNeurons);
+            auto cn = dynamic_cast<ChainableNeuron*>(neuronPtr.get());
+            if(cn != nullptr) {
+                auto n = dynamic_cast<InnerNeuron*>(neuronPtr.get());
+                if(n != nullptr) {
+                    n->AddPrevNeurons(prevNeurons, randomize);
+                }
+                else {
+                    cn->AddPrevNeurons(prevNeurons);
+                }
+            }
         }
     }
     
@@ -57,6 +65,6 @@ class NeuronLayer {
     }
   
   protected:
-    std::vector<std::shared_ptr<T>> mNeurons;
+    std::vector<std::shared_ptr<Neuron>> mNeurons;
     NeuronLayer* mPrevLayer = nullptr;
 };
