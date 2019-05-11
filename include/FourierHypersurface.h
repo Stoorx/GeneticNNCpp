@@ -65,6 +65,14 @@ class FourierHypersurface {
         }
     }
     
+    void AddDimension(PitchedFourierSeries& pfs) {
+        mSeries.emplace_back(pfs);
+    }
+    
+    void AddDimension(PitchedFourierSeries&& pfs) {
+        mSeries.emplace_back(pfs);
+    }
+    
     class FourierHypersurfaceIterator : public std::vector<PitchedFourierSeries>::iterator {
       public:
         explicit FourierHypersurfaceIterator(std::vector<PitchedFourierSeries>::iterator& it) :

@@ -29,6 +29,23 @@ class NeuronLayer {
         mNeurons.insert(mNeurons.end(), neurons.begin(), neurons.end());
     }
     
+    class NeuronLayerIterator : public std::vector<std::shared_ptr<Neuron>>::iterator {
+      public:
+        explicit NeuronLayerIterator(std::vector<std::shared_ptr<Neuron>>::iterator& it) :
+                std::vector<std::shared_ptr<Neuron>>::iterator(it) {
+        }
+        
+    };
+    
+    NeuronLayerIterator begin() {
+        auto it = mNeurons.begin();
+        return NeuronLayerIterator(it);
+    }
+    
+    NeuronLayerIterator end() {
+        auto it = mNeurons.end();
+        return NeuronLayerIterator(it);
+    }
     std::vector<double> CalculateLayer() {
         std::vector<double> result;
         
@@ -56,7 +73,7 @@ class NeuronLayer {
         }
     }
     
-    const std::vector<std::shared_ptr<Neuron>>& GetNeurons() {
+    std::vector<std::shared_ptr<Neuron>>& GetNeurons() {
         return mNeurons;
     }
     

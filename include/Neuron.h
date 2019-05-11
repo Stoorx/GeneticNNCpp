@@ -104,7 +104,14 @@ class InnerNeuron : public ChainableNeuron {
         
         return mCache;
     }
-  
+    
+    FourierHypersurface& GetActivationFunction() {
+        return mActivationFunction;
+    }
+    
+    void SetActivationFunction(FourierHypersurface& fhs) {
+        mActivationFunction = fhs;
+    }
   protected:
     uint64_t            mDefaultActivationFunctionLength = 0;
     FourierHypersurface mActivationFunction;
